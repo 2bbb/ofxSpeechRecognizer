@@ -1,6 +1,6 @@
-# ofxSpeechRecognition
+# ofxSpeechRecognizer
 
-port of Speech framework on iOS.
+wrapper of Speech framework on iOS.
 
 ## Requirements
 

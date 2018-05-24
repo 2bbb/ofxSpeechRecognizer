@@ -7,7 +7,7 @@ class ofApp : public ofxiOSApp, public ofxSpeechRecognizerDelegate {
     
 public:
     void setup() {
-        recognizer.printSupportedLocale();
+        recognizer.printSupportedLocales();
         recognizer.setup("en-US");
         ofSetBackgroundColor(0);
         ofSetColor(255);

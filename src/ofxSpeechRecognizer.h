@@ -107,7 +107,7 @@ namespace ofx {
             static void requestAuthorization(std::function<void(AuthorizationStatus)> callback);
             
             static std::vector<std::string> supportedLocales();
-            static void printSupportedLocale() {
+            static void printSupportedLocales() {
                 auto &&locales = supportedLocales();
                 std::ostringstream os;
                 for(auto &&locale : locales) os << "\n  " << locale;

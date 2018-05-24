@@ -178,29 +178,32 @@ namespace ofx {
         { return to_cpp($.locale.localeIdentifier); };
         
         void Recognizer::cancel() {
-            if(request) {
-                SFSpeechRecognitionRequest *req = (SFSpeechRecognitionRequest *)request;
-                if([req isKindOfClass:SFSpeechAudioBufferRecognitionRequest.class]) {
-                    [((SFSpeechAudioBufferRecognitionRequest *)request) endAudio];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+                if(this->request) {
+                    SFSpeechRecognitionRequest *req = (SFSpeechRecognitionRequest *)this->request;
+                    if([req isKindOfClass:SFSpeechAudioBufferRecognitionRequest.class]) {
+                        [((SFSpeechAudioBufferRecognitionRequest *)this->request) endAudio];
+                    }
+                    this->request = nullptr;
                 }
-                request = nullptr;
-            }
-            
-            if(engine) {
-                [((AVAudioEngine *)engine) stop];
-                AVAudioInputNode *inputNode = ((AVAudioEngine *)engine).inputNode;
-                [inputNode removeTapOnBus:0];
-            }
+                
+                if(this->engine) {
+                    [((AVAudioEngine *)this->engine) stop];
+                    AVAudioInputNode *inputNode = ((AVAudioEngine *)this->engine).inputNode;
+                    [inputNode removeTapOnBus:0];
+                    [inputNode reset];
+                }
 
-            if(task) {
-                SFSpeechRecognitionTask *t = (SFSpeechRecognitionTask *)task;
-                [t cancel];
-                task = nullptr;
-            }
+                if(this->task) {
+                    SFSpeechRecognitionTask *t = (SFSpeechRecognitionTask *)this->task;
+                    [t cancel];
+                    this->task = nil;
+                }
+//            });
         }
         
         bool Recognizer::isRecognizingNow() const {
-            return task;
+            return task != nil;
         }
         void *Recognizer::createSpeechAudioBufferRecognitionRequest() {
             cancel();
@@ -278,9 +281,9 @@ namespace ofx {
                             resultHandler:^(SFSpeechRecognitionResult *result,
                                             NSError *error)
             {
-                if(!result) {
+                if(!error && !result) {
                     ofxSpeechRecognitionResult result;
-                    callback(result, "no speech found");
+                    dispatch_async(dispatch_get_main_queue(), ^{ callback(result, "no speech found"); });
                     return;
                 }
                 if(error) {

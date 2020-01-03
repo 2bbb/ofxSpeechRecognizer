@@ -7,3 +7,5 @@ meta:
 
 ios:
 	ADDON_FRAMEWORKS = Speech
+osx:
+	ADDON_FRAMEWORKS = Speech

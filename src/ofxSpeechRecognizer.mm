@@ -4,9 +4,9 @@
 //  Created by ISHII 2bit on 2018/05/23.
 //
 
-#import <Speech/Speech.h>
-
 #include "ofxSpeechRecognizer.h"
+
+#import <Speech/Speech.h>
 
 namespace {
     const char *to_cpp(NSString *str)
@@ -151,7 +151,22 @@ namespace ofx {
         
         void Recognizer::requestAuthorization(std::function<void(AuthorizationStatus)> callback) {
             [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
-                callback(static_cast<AuthorizationStatus>(status));
+                switch(status) {
+                    case SFSpeechRecognizerAuthorizationStatusAuthorized:
+                        callback(AuthorizationStatus::Authorized);
+                        break;
+                    case SFSpeechRecognizerAuthorizationStatusDenied:
+                        callback(AuthorizationStatus::Denied);
+                        break;
+                    case SFSpeechRecognizerAuthorizationStatusNotDetermined:
+                        callback(AuthorizationStatus::NotDetermined);
+                        break;
+                    case SFSpeechRecognizerAuthorizationStatusRestricted:
+                        callback(AuthorizationStatus::Restricted);
+                        break;
+                    default:
+                        callback(AuthorizationStatus::NotDetermined);
+                }
             }];
         }
         
@@ -208,6 +223,7 @@ namespace ofx {
         void *Recognizer::createSpeechAudioBufferRecognitionRequest() {
             cancel();
             
+#ifdef TARGET_OF_IOS
             AVAudioSession *audioSession = AVAudioSession.sharedInstance;
             NSError *err = nil;
             [audioSession setCategory:AVAudioSessionCategoryRecord
@@ -228,7 +244,8 @@ namespace ofx {
                 ofLogError("ofxSpeechRecognizer::requestWithAudioInput") << "failure: setup audio [" << to_cpp(err.description) << "]";
                 return nullptr;
             }
-
+#endif
+            
             if(!this->engine) {
                 AVAudioEngine *engine = [[AVAudioEngine alloc] init];
                 this->engine = engine;

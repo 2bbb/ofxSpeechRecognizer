@@ -1,10 +1,11 @@
 # ofxSpeechRecognizer
 
-wrapper of Speech framework on iOS.
+wrapper of Speech framework on iOS and macOS.
 
 ## Requirements
 
 - iOS 10~ 
+- macOS 10.15~ 
 - network access
 
 ## Notice

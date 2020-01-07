@@ -1,7 +1,13 @@
-#include "ofxiOS.h"
+#ifdef TARGET_OF_IOS
+#   include "ofxiOS.h"
+using BaseApp = ofxiOSApp;
+#else
+#   include "ofMain.h"
+using BaseApp = ofBaseApp;
+#endif
 #include "ofxSimpleSpeechRecognizer.h"
 
-class ofApp : public ofxiOSApp {
+class ofApp : public BaseApp {
     ofxSimpleSpeechRecognizer recognizer;
 public:
     void setup() {
@@ -15,29 +21,31 @@ public:
         else ofBackground(0);
         
         ofDrawBitmapString(recognizer.isAuthorized() ? "authorized" : "not authorized..", 20, 20);
-        ofDrawBitmapString(recognizer.isRecognizingNow() ? "recognizing now" : "tap to recognize", 20, 20);
-        ofDrawBitmapString(recognizer.getLatestResult(), 20, 40);
+        ofDrawBitmapString(recognizer.isRecognizingNow() ? "recognizing now" : "tap to recognize", 20, 40);
+        ofDrawBitmapString(recognizer.getLatestResult(), 20, 60);
     }
     void exit() {};
     
+#ifdef TARGET_OF_IOS
     void touchDown(ofTouchEventArgs & touch) {
         if(recognizer.isRecognizingNow()) recognizer.stop();
         else recognizer.start();
     }
-    void touchMoved(ofTouchEventArgs & touch) {}
-    void touchUp(ofTouchEventArgs & touch) {}
-    void touchDoubleTap(ofTouchEventArgs & touch) {}
-    void touchCancelled(ofTouchEventArgs & touch) {}
-    
-    void lostFocus() {}
-    void gotFocus() {}
-    void gotMemoryWarning() {}
-    void deviceOrientationChanged(int newOrientation) {}
-    
+#else
+    void keyPressed(int key) {
+        if(key == ' ') {
+            if(recognizer.isRecognizingNow()) {
+                recognizer.stop();
+            } else {
+                recognizer.start();
+            }
+        }
+    }
+#endif
 };
 
 int main() {
-    
+#ifdef TARGET_OF_IOS
     //  here are the most commonly used iOS window settings.
     //------------------------------------------------------
     ofiOSWindowSettings settings;
@@ -50,6 +58,12 @@ int main() {
     settings.glesVersion = OFXIOS_RENDERER_ES1; // type of renderer to use, ES1, ES2, ES3
     settings.windowMode = OF_FULLSCREEN;
     ofCreateWindow(settings);
-    
+#else
+    ofSetupOpenGL(1024,768,OF_WINDOW);            // <-------- setup the GL context
+
+    // this kicks off the running of my app
+    // can be OF_WINDOW or OF_FULLSCREEN
+    // pass in width and height too:
+#endif
     return ofRunApp(new ofApp);
 }

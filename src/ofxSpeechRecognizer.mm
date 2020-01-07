@@ -8,6 +8,12 @@
 
 #import <Speech/Speech.h>
 
+namespace bbb {
+    bool has_NSSpeechRecognitionUsageDescription() {
+        NSString *speechRecognitionUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSSpeechRecognitionUsageDescription"];
+        return speechRecognitionUsageDescription != nil;
+    }
+}
 namespace {
     const char *to_cpp(NSString *str)
     { return str ? str.UTF8String : ""; };

@@ -17,6 +17,7 @@
 
 namespace bbb {
     struct speech_recognizer;
+    bool has_NSSpeechRecognitionUsageDescription();
 };
 
 namespace ofx {
@@ -115,6 +116,11 @@ namespace ofx {
             }
             
             void setup(std::string locale = "") {
+                if(!bbb::has_NSSpeechRecognitionUsageDescription()) {
+                    ofLogError("ofxSpeechRecognizer") << "need NSSpeechRecognitionUsageDescription on info.plist";
+                    return;
+                }
+
                 if(authorizationStatus() != AuthorizationStatus::Authorized) {
                     requestAuthorization([this, locale](bool isAuthorized) {
                         ofLogNotice("ofxSpeechRecognizer") << "authorization " << (isAuthorized ? "succeed" : "failured");

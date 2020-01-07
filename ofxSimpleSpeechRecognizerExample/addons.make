@@ -1,1 +1,1 @@
-ofxSpeechRecognizer
+../../ofxSpeechRecognizer
